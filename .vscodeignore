@@ -1,0 +1,14 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+# 保留运行时依赖 iconv-lite，排除其他 node_modules
+node_modules/*
+!node_modules/iconv-lite
+!node_modules/safer-buffer

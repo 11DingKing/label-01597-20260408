@@ -1,0 +1,262 @@
+{
+  "name": "a-stock-watcher",
+  "displayName": "A股股票关注",
+  "description": "在 VS Code 中关注 A 股股票实时行情，做最好用的股票插件",
+  "version": "1.0.0",
+  "publisher": "your-publisher-name",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/astock-dev/a-stock-watcher.git"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "stock",
+    "A股",
+    "股票",
+    "行情",
+    "finance",
+    "investment",
+    "market"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:astockList"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "astock.addStock",
+        "title": "添加股票",
+        "icon": "$(add)",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.removeStock",
+        "title": "删除股票",
+        "icon": "$(trash)",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.refreshAll",
+        "title": "刷新全部",
+        "icon": "$(refresh)",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.showStockDetail",
+        "title": "查看股票详情",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.sortByChangeDesc",
+        "title": "按涨幅降序排列",
+        "icon": "$(arrow-down)",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.sortByChangeAsc",
+        "title": "按涨幅升序排列",
+        "icon": "$(arrow-up)",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.sortByNone",
+        "title": "默认排序",
+        "icon": "$(list-flat)",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.toggleGroup",
+        "title": "切换分组显示",
+        "icon": "$(list-tree)",
+        "category": "A股关注"
+      },
+      {
+        "command": "astock.addToStatusBar",
+        "title": "添加到状态栏",
+        "icon": "$(pin)",
+        "category": "A股关注"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "astock-container",
+          "title": "A股关注",
+          "icon": "$(graph-line)"
+        }
+      ]
+    },
+    "views": {
+      "astock-container": [
+        {
+          "id": "astockList",
+          "name": "股票列表"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "astockList",
+        "contents": "欢迎使用 A股关注插件！\n\n开始添加您关注的股票吧。\n\n[添加股票](command:astock.addStock)\n\n提示：股票代码格式为 sh600519（沪市）或 sz000001（深市）"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "astock.addStock",
+          "when": "view == astockList",
+          "group": "navigation@1"
+        },
+        {
+          "command": "astock.refreshAll",
+          "when": "view == astockList",
+          "group": "navigation@2"
+        },
+        {
+          "command": "astock.toggleGroup",
+          "when": "view == astockList",
+          "group": "navigation@3"
+        },
+        {
+          "command": "astock.sortByChangeDesc",
+          "when": "view == astockList",
+          "group": "sort@1"
+        },
+        {
+          "command": "astock.sortByChangeAsc",
+          "when": "view == astockList",
+          "group": "sort@2"
+        },
+        {
+          "command": "astock.sortByNone",
+          "when": "view == astockList",
+          "group": "sort@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "astock.removeStock",
+          "when": "view == astockList && viewItem == stock",
+          "group": "inline"
+        },
+        {
+          "command": "astock.addToStatusBar",
+          "when": "view == astockList && viewItem == stock",
+          "group": "context@1"
+        },
+        {
+          "command": "astock.showStockDetail",
+          "when": "view == astockList && viewItem == stock",
+          "group": "context@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "A股股票关注",
+      "properties": {
+        "astock.stocks": {
+          "type": "array",
+          "default": [
+            "sh000001",
+            "sz399001"
+          ],
+          "description": "关注的股票代码列表（如 sh600519, sz000001）",
+          "items": {
+            "type": "string"
+          }
+        },
+        "astock.refreshInterval": {
+          "type": "number",
+          "default": 10,
+          "minimum": 5,
+          "maximum": 600,
+          "description": "自动刷新间隔（秒），最小 5 秒，最大 10 分钟"
+        },
+        "astock.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否在状态栏显示股票信息"
+        },
+        "astock.statusBarStocks": {
+          "type": "array",
+          "default": [
+            "sh000001"
+          ],
+          "description": "在状态栏显示的股票代码列表",
+          "items": {
+            "type": "string"
+          }
+        },
+        "astock.statusBarTemplate": {
+          "type": "string",
+          "default": "${icon} ${name} ${price} ${percent}",
+          "description": "状态栏显示模板，支持变量：${icon} ${name} ${code} ${price} ${percent} ${change}"
+        },
+        "astock.enableGroup": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否启用分组显示（按指数、沪市、深市分组）"
+        },
+        "astock.sortBy": {
+          "type": "string",
+          "enum": [
+            "none",
+            "changeDesc",
+            "changeAsc"
+          ],
+          "enumDescriptions": [
+            "默认顺序（按添加顺序）",
+            "按涨幅从高到低",
+            "按涨幅从低到高"
+          ],
+          "default": "none",
+          "description": "股票排序方式"
+        },
+        "astock.showPercent": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否显示涨跌幅"
+        },
+        "astock.showPrice": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否显示当前价格"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix",
+    "package": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.7.1",
+    "eslint": "^8.0.0",
+    "glob": "^13.0.1",
+    "mocha": "^10.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "iconv-lite": "^0.6.3"
+  }
+}
